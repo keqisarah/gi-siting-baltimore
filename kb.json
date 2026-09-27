@@ -1,0 +1,135 @@
+{
+  "meta": {
+    "title": "GI/BMP Siting Knowledge Base",
+    "note": "Factual siting knowledge distilled from the EPA SUSTAIN BMP Siting Tool (9 criteria), the EPA Rainworks GI prioritization matrix, and the AGU2025 Cherry Hill parcel-level scoring. Method: each criterion is reclassified to a 1-5 suitability score; final suitability = sum(score x weight). No third-party paper full text is included.",
+    "convention": "5 = most suitable, 1 = least suitable, 0/NoData = excluded."
+  },
+  "cards": [
+    {
+      "id": "method",
+      "title": "How the suitability score is computed (weighted overlay)",
+      "source": "EPA SUSTAIN BMP Siting Tool",
+      "keywords": ["method", "weighted", "overlay", "sum", "formula", "score", "how", "computed", "calculate", "suitability", "reclassify"],
+      "body": "Each criterion (slope, imperviousness, distance to road, etc.) is reclassified into a 1-5 suitability score (5 = most suitable, 1 = least, 0/NoData = excluded). The final suitability of a site is the weighted sum: suitability = Sigma(criterion_score x weight), normalized by the sum of weights. This is the core logic of the EPA SUSTAIN BMP Siting Tool, here re-implemented in open code (no ArcGIS)."
+    },
+    {
+      "id": "why_weights",
+      "title": "Why do the weights matter, and who sets them?",
+      "source": "EPA SUSTAIN + engineering judgment",
+      "keywords": ["weight", "weights", "matter", "why", "judgment", "priority", "importance", "change", "expert"],
+      "body": "Weights encode engineering judgment: how much each criterion matters for THIS project's goal. Changing weights changes which sites rank highest. There is no single 'correct' set - a flood-reduction project weights proximity-to-flooding higher; an equity project weights proximity-to-schools/communities higher. The teaching point: move the weights and ask 'what does this map now represent, and can I defend it?'"
+    },
+    {
+      "id": "crit_slope",
+      "title": "Criterion: Slope (DC_DS)",
+      "source": "EPA SUSTAIN criterion + AGU2025 reclass",
+      "keywords": ["slope", "steep", "flat", "grade", "terrain", "infiltration", "percent"],
+      "body": "Slope controls whether stormwater can pond and infiltrate. Flatter is better for infiltration-based GI. EPA reference breaks: <5% / <10% / <15% / >=15%. Suggested 1-5 reclass: score 5 for <=2% (very flat, ideal for infiltration GI), 4 for 2-5%, 3 for 5-10%, 2 for 10-15%, 1 for >15% (too steep). Bioretention target <5%; rain gardens ~<2%; swales ~4-6%."
+    },
+    {
+      "id": "crit_imp",
+      "title": "Criterion: Imperviousness / Curve Number (DC_IMP)",
+      "source": "EPA SUSTAIN criterion",
+      "keywords": ["impervious", "imperviousness", "cn", "curve number", "runoff", "pavement", "hardscape"],
+      "body": "Higher imperviousness / Curve Number means more runoff generated, so it is a higher-priority target for GI retrofit - high CN gets a high score. Suggested reclass: 5 = CN >=90 (high runoff, retrofit priority), 4 = 80-90, 3 = 70-80, 2 = 60-70, 1 = CN <60 (already pervious, low benefit)."
+    },
+    {
+      "id": "crit_road",
+      "title": "Criterion: Distance to Road / Road Buffer (DC_RB)",
+      "source": "EPA SUSTAIN criterion",
+      "keywords": ["road", "street", "distance", "buffer", "intercept", "access"],
+      "body": "Being near a road helps intercept street runoff and eases construction/maintenance access - but directly on the pavement is excluded. Suggested reclass: 5 = near (good for interception, off-pavement), 4 = fairly near, 2 = far, 0 = on the road itself / too close (excluded). Tree trenches and swales depend strongly on road proximity."
+    },
+    {
+      "id": "crit_building",
+      "title": "Criterion: Distance to Building / Building Buffer (DC_BB)",
+      "source": "EPA SUSTAIN criterion",
+      "keywords": ["building", "footprint", "foundation", "distance", "buffer", "roof", "setback"],
+      "body": "Infiltration-based GI must keep a setback from building foundations to avoid seepage damage. Conversely, building rooftops themselves are the target for green roofs. So the same layer is used differently depending on GI type."
+    },
+    {
+      "id": "crit_ownership",
+      "title": "Criterion: Land Ownership / Land Use (DC_LO)",
+      "source": "EPA SUSTAIN criterion",
+      "keywords": ["ownership", "land", "public", "private", "parcel", "vacant", "park", "implement", "city-owned"],
+      "body": "Public land (parks, city-owned vacant lots) is prioritized because it is far easier and cheaper to implement GI on; private or restricted land is down-weighted or excluded. In the Baltimore demo, city-owned lots score 5 and non-city lots score 2 on this criterion."
+    },
+    {
+      "id": "crit_soil",
+      "title": "Criterion: Hydrologic Soil Group (DC_HG)",
+      "source": "EPA SUSTAIN criterion",
+      "keywords": ["soil", "hydrologic", "group", "infiltration", "abcd", "permeability"],
+      "body": "Hydrologic Soil Group A/B infiltrate well (high score for infiltration-based GI like bioretention); C/D infiltrate poorly (lower score, or require underdrains). Soil is a key control for whether infiltration GI will actually work."
+    },
+    {
+      "id": "crit_others",
+      "title": "Other SUSTAIN criteria: Drainage Area, Water Table, Stream Buffer",
+      "source": "EPA SUSTAIN criteria",
+      "keywords": ["drainage", "area", "water table", "groundwater", "stream", "buffer", "depth"],
+      "body": "Drainage Area (DC_DA, acres) - the contributing area a BMP treats. Water Table Depth (DC_WT, ft) - a shallow water table limits infiltration GI. Stream Buffer (DC_SB) - distance to streams; proximity supports daylighting/drainage but requires riparian setbacks. Together with slope, imperviousness, road, building, ownership and soil these make up the 9 SUSTAIN siting criteria."
+    },
+    {
+      "id": "gi_bio",
+      "title": "GI type: Bioretention / Rain Garden (BIO)",
+      "source": "AGU2025 Cherry Hill scoring",
+      "keywords": ["bioretention", "bio", "rain garden", "infiltration", "quantity", "quality"],
+      "body": "Bioretention targets both runoff volume reduction and water-quality treatment. Key criteria: slope, imperviousness, distance to road, distance to building, soil group. Default weights: slope 0.30, imperviousness 0.30, road 0.15, building 0.10, soil 0.15. Rule of thumb: gentle slope (<5% ideal), medium-good infiltration soil, close to impervious source. EPA max slope ~5%."
+    },
+    {
+      "id": "gi_gr",
+      "title": "GI type: Green Roof (GR)",
+      "source": "AGU2025 Cherry Hill scoring",
+      "keywords": ["green roof", "gr", "roof", "rooftop", "heat", "urban heat island", "structural"],
+      "body": "Green roofs reduce runoff volume and mitigate the urban heat island. Key criteria: distance to building (the rooftop is the host) and imperviousness. Default weights: building 0.6, imperviousness 0.4. Rule of thumb: roof slope <=10%, requires structural load assessment; independent of ground slope and soil."
+    },
+    {
+      "id": "gi_rg",
+      "title": "GI type: Rain Garden / Rainwater Harvesting (RG)",
+      "source": "AGU2025 Cherry Hill scoring",
+      "keywords": ["rain garden", "rg", "rainwater", "harvesting", "residential", "downspout"],
+      "body": "Small residential-scale volume reduction, typically near roof downspouts. Key criteria: slope, imperviousness, distance to building. Default weights: slope 0.35, imperviousness 0.35, building 0.30. Rule of thumb: small scale, near downspouts, gentle slope. EPA max slope ~2%."
+    },
+    {
+      "id": "gi_swale",
+      "title": "GI type: Grassed / Bioswale (SWALE)",
+      "source": "AGU2025 Cherry Hill scoring",
+      "keywords": ["swale", "bioswale", "grassed", "conveyance", "linear", "channel"],
+      "body": "Linear conveyance + water-quality treatment, placed along road or parcel edges. Key criteria: slope, distance to road, imperviousness. Default weights: slope 0.4, road 0.35, imperviousness 0.25. Rule of thumb: moderate slope needed (too steep = erosion, too flat = no drainage). EPA max slope ~4-6%."
+    },
+    {
+      "id": "gi_tt",
+      "title": "GI type: Tree Trench / Tree Box (TT)",
+      "source": "AGU2025 Cherry Hill scoring",
+      "keywords": ["tree trench", "tt", "tree box", "street", "sidewalk", "heat", "quality"],
+      "body": "Tree trenches/boxes provide volume reduction, water-quality treatment and heat mitigation, placed along streets/sidewalks. Key criteria: distance to road, imperviousness, distance to building. Default weights: road 0.45, imperviousness 0.35, building 0.20. Rule of thumb: strongly depends on road proximity; used for street runoff."
+    },
+    {
+      "id": "objective_map",
+      "title": "Which GI type fits which goal?",
+      "source": "EPA Rainworks + AGU2025",
+      "keywords": ["objective", "goal", "which", "type", "choose", "quantity", "quality", "heat", "equity", "recommend"],
+      "body": "Runoff volume reduction: Bioretention, Rain Garden, Green Roof, Tree Trench. Water-quality treatment: Bioretention, Swale, Tree Trench. Urban-heat mitigation: Green Roof, Tree Trench. Social equity / landscape amenity: Bioretention, Tree Trench, Green Roof. Pick your GI type from your primary goal, then weight its key criteria."
+    },
+    {
+      "id": "workflow",
+      "title": "The 6-step siting workflow",
+      "source": "EPA SUSTAIN workflow",
+      "keywords": ["workflow", "steps", "process", "procedure", "how to", "start", "order"],
+      "body": "1) Data prep: gather DEM, land use/CN, roads, buildings, soils, parcel ownership. 2) Choose GI type from your goal (quantity/quality/heat/equity). 3) Reclassify each criterion raster to 1-5 suitability. 4) Assign weights per criterion (sum to 1), referencing the EPA Rainworks matrix and local experience. 5) Weighted overlay: suitability = Sigma(score x weight). 6) Interpret & validate: find high-suitability areas, compare with a known case (Cherry Hill), and justify the result."
+    },
+    {
+      "id": "baltimore_demo",
+      "title": "The 5 criteria used in this Baltimore demo",
+      "source": "This demo (SUSTAIN-based, real open data)",
+      "keywords": ["baltimore", "demo", "flood", "stream", "school", "ownership", "size", "this tool", "criteria used"],
+      "body": "This live demo applies the SUSTAIN weighted-overlay logic with 5 criteria computed from real Baltimore open data: proximity to flood-prone (repetitive-loss) areas, proximity to historic streams, proximity to schools, city ownership, and lot size. Each is pre-scored 1-5 per lot; the browser computes suitability = Sigma(score x weight) live as you move the sliders. It is a simplified instance of SUSTAIN, not the full 9-criterion tool."
+    },
+    {
+      "id": "verify",
+      "title": "Why 'verify against evidence' matters here",
+      "source": "Teaching principle",
+      "keywords": ["verify", "evidence", "hallucination", "trust", "check", "judgment", "ai", "wrong"],
+      "body": "A suitability map is only as good as its criteria, thresholds and weights - all of which are assumptions. Always ask: does the high-scoring area make physical sense? What criterion is missing (e.g. slope, soil, existing utilities)? This tool returns only cited, factual siting knowledge so you can check outputs against evidence rather than trusting a black box."
+    }
+  ]
+}
