@@ -36,6 +36,19 @@
   .legend{background:#fff;line-height:1.5;padding:8px 10px;border-radius:8px;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.2)}
   .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;border:1px solid #555;vertical-align:-1px}
   .note{font-size:11px;color:#888;margin-top:14px;line-height:1.45}
+  .ask .ask-intro{font-size:11px;color:#666;margin:0 0 7px;line-height:1.45}
+  .ask input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);
+       border-radius:6px;font-size:13px}
+  .ask-chips{margin:7px 0 0;display:flex;flex-wrap:wrap;gap:5px}
+  .chip{font-size:11px;background:#eef2f7;border:1px solid #d5deea;color:var(--navy2);
+       border-radius:12px;padding:3px 9px;cursor:pointer}
+  .chip:hover{background:var(--navy2);color:#fff}
+  .ans{background:#fff;border:1px solid var(--line);border-left:3px solid var(--orange);
+       border-radius:6px;padding:9px 11px;margin-top:8px}
+  .ans .a-title{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:3px}
+  .ans .a-body{font-size:12px;line-height:1.5;color:#333}
+  .ans .a-src{font-size:10.5px;color:#8a5a2b;margin-top:6px;font-style:italic}
+  .ask-empty{font-size:11.5px;color:#999;margin-top:8px}
   .banner{background:#fff3e9;border:1px solid #f6c9a8;border-radius:8px;padding:9px 11px;font-size:12px;color:#7a3200;margin-top:8px}
   a{color:var(--navy2)}
   @media(max-width:720px){
@@ -78,6 +91,16 @@
       <div class="slider-row">
         <label><span>Show top N lots</span><b id="topNval">400</b></label>
         <input type="range" id="topN" min="100" max="2000" step="100" value="400"/>
+      </div>
+
+      <div class="sec-title">Ask the evidence 📚</div>
+      <div class="ask">
+        <p class="ask-intro">Every answer is drawn from a cited knowledge base
+        (EPA SUSTAIN · EPA Rainworks · AGU2025) — <b>no AI guessing</b>.
+        This is the “verify against evidence” habit in action.</p>
+        <input type="text" id="askInput" placeholder="e.g. Why does slope matter? Which GI reduces heat?"/>
+        <div class="ask-chips" id="askChips"></div>
+        <div id="askResults"></div>
       </div>
 
       <div class="note" id="meta">Loading real Baltimore data…</div>
