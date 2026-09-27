@@ -152,6 +152,78 @@ fetch("lots.json").then(r=>r.json()).then(data=>{
   render();
 });
 
+// ---- Ask the evidence (client-side cited retrieval over kb.json) ----
+let KB = [];
+const STOP = new Set(["the","a","an","of","to","for","and","or","is","are","do","does",
+  "why","what","which","how","in","on","with","this","that","it","be","as","at","by",
+  "i","you","should","would","can","my","me","near","matter","matters","use","used","fit","fits"]);
+
+function tokenize(s){
+  return (s.toLowerCase().match(/[a-z0-9]+/g) || []).filter(t => !STOP.has(t) && t.length>1);
+}
+
+function searchKB(query){
+  const qt = tokenize(query);
+  if (!qt.length) return [];
+  const scored = KB.map(card => {
+    const hayKw = card.keywords.join(" ").toLowerCase();
+    const hayText = (card.title + " " + card.body).toLowerCase();
+    let s = 0;
+    for (const t of qt){
+      // keyword hits are worth most; title next; body least
+      if (card.keywords.some(k => k.includes(t) || t.includes(k))) s += 5;
+      if (card.title.toLowerCase().includes(t)) s += 3;
+      if (hayText.includes(t)) s += 1;
+    }
+    return {card, s};
+  }).filter(x => x.s > 0);
+  scored.sort((a,b)=>b.s-a.s);
+  return scored.slice(0,3);
+}
+
+function renderAnswers(query){
+  const box = document.getElementById("askResults");
+  const hits = searchKB(query);
+  if (!hits.length){
+    box.innerHTML = '<div class="ask-empty">No matching evidence found. '+
+      'Try keywords like slope, soil, weights, green roof, heat, or workflow.</div>';
+    return;
+  }
+  box.innerHTML = hits.map(h =>
+    `<div class="ans">`+
+    `<div class="a-title">${h.card.title}</div>`+
+    `<div class="a-body">${h.card.body}</div>`+
+    `<div class="a-src">Source: ${h.card.source}</div>`+
+    `</div>`).join("");
+}
+
+function initAsk(){
+  const input = document.getElementById("askInput");
+  const chipsBox = document.getElementById("askChips");
+  const examples = [
+    "Why does slope matter?",
+    "Which GI reduces urban heat?",
+    "How is suitability calculated?",
+    "Why do weights matter?",
+    "What criteria does this demo use?",
+  ];
+  chipsBox.innerHTML = examples.map(e => `<span class="chip">${e}</span>`).join("");
+  chipsBox.querySelectorAll(".chip").forEach(c =>
+    c.addEventListener("click", ()=>{ input.value = c.textContent; renderAnswers(c.textContent); }));
+
+  let t = null;
+  input.addEventListener("input", e=>{
+    clearTimeout(t);
+    const v = e.target.value;
+    t = setTimeout(()=>{ if (v.trim().length>=2) renderAnswers(v); else document.getElementById("askResults").innerHTML=""; }, 200);
+  });
+}
+
+fetch("kb.json").then(r=>r.json()).then(d=>{ KB = d.cards; initAsk(); }).catch(()=>{
+  document.getElementById("askResults").innerHTML =
+    '<div class="ask-empty">Knowledge base unavailable.</div>';
+});
+
 // legend
 const legend = L.control({position:"bottomright"});
 legend.onAdd = function(){
